@@ -1,12 +1,15 @@
 import "./App.css";
 import players from "./footballers.json";
 import Modal from "./components/Modal";
+import InputInfo from "./components/InputInfo";
+import PlayerList from "./components/PlayerList";
 import { Component } from "react";
 
 class App extends Component {
   state = {
     players,
     isModal: null,
+    filter: "",
   };
 
   handleDelete = (id) => {
@@ -29,32 +32,29 @@ class App extends Component {
     }
   };
 
+  handleChange = (text) => {
+    this.setState({
+      filter: text,
+    });
+  };
+
   render() {
+    const {players,filter,isModal}=this.state
+    const filteredPlayers = players.filter(({ name }) => {
+     
+      return name
+        .toLowerCase()
+        .includes(filter.toLowerCase().trim());
+    });
     return (
       <>
         <h1>Popular Football Players</h1>
-        <ul>
-          {this.state.players.map(({ id, name, club, photo }) => {
-            return (
-              <li key={id}>
-                <img
-                  onClick={() => this.handleClickOnPlayer(photo)}
-                  src={photo}
-                  alt={name}
-                />
-                <h2>{name}</h2>
-                <p>{club}</p>
-                <button onClick={() => this.handleDelete(id)} type="button">
-                  Delete
-                </button>
-              </li>
-            );
-          })}
-        </ul>
+        <InputInfo onFilter={this.handleChange} />
+        <PlayerList playerData={filteredPlayers} onDelete={this.handleDelete} onImage={this.handleClickOnPlayer}/>
         {this.state.isModal && (
           <Modal
             closeModal={this.handleCloseModal}
-            selectedImg={this.state.isModal}
+            selectedImg={isModal}
           />
         )}
       </>
